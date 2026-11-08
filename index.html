@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#F9CADB">
 <title>Fercheese Turns 30 Coupons</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courgette&family=Lilita+One&family=Fredoka:wght@500;600;700&family=Poppins:wght@500;700;800&display=swap">
@@ -18,6 +22,9 @@
     --white:#fff;
     --notch:clamp(14px,2.6vmin,26px);
     --base:clamp(12px,2vmin,18px);
+    --ctrl:30px;
+    --safe-t:env(safe-area-inset-top, 0px);
+    --safe-b:env(safe-area-inset-bottom, 0px);
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior-y:none}
@@ -44,14 +51,14 @@
 
   /* Language switch */
   .lang{
-    position:fixed;top:clamp(8px,1.6vmin,16px);right:clamp(8px,1.6vmin,16px);z-index:20;
-    display:flex;align-items:center;gap:8px;
+    position:fixed;top:calc(clamp(8px,1.6vmin,16px) + var(--safe-t));right:calc(clamp(8px,1.6vmin,16px) + env(safe-area-inset-right, 0px));z-index:20;
+    display:flex;align-items:center;gap:8px;height:var(--ctrl);line-height:1;
     font-size:clamp(11px,1.5vmin,14px);font-weight:700;letter-spacing:.08em
   }
   .lang span{color:rgba(28,61,87,.55);transition:color .2s}
   .lang span.on{color:var(--deep)}
   .switch{
-    position:relative;width:52px;height:30px;border-radius:999px;border:0;padding:0;cursor:pointer;
+    position:relative;width:52px;height:var(--ctrl);border-radius:999px;border:0;padding:0;cursor:pointer;
     background:var(--teal);transition:background .2s
   }
   .switch::after{
@@ -63,8 +70,8 @@
   .switch:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
 
   .playback{
-    position:fixed;top:clamp(8px,1.6vmin,16px);left:clamp(8px,1.6vmin,16px);z-index:20;
-    width:52px;height:30px;border-radius:999px;border:0;padding:0;cursor:pointer;
+    position:fixed;top:calc(clamp(8px,1.6vmin,16px) + var(--safe-t));left:calc(clamp(8px,1.6vmin,16px) + env(safe-area-inset-left, 0px));z-index:20;
+    width:52px;height:var(--ctrl);border-radius:999px;border:0;padding:0;cursor:pointer;
     display:grid;place-items:center;background:var(--teal);color:#fff;
     box-shadow:0 1px 3px rgba(0,0,0,.2)
   }
@@ -299,8 +306,8 @@
   /* ---------- Phones (portrait): same horizontal tickets, all on one screen ---------- */
   @media (max-width:820px){
     :root{--notch:10px;--base:clamp(11px,3.6vw,15px)}
-    body{padding:calc(10px + 40px) 12px calc(10px + env(safe-area-inset-bottom));gap:10px}
-    .lang{background:rgba(255,255,255,.85);padding:4px 8px;border-radius:999px}
+    body{padding:calc(10px + 40px + var(--safe-t)) 12px calc(10px + var(--safe-b));gap:10px}
+    .lang{background:rgba(255,255,255,.85);padding:0 8px;height:var(--ctrl);border-radius:999px}
     header{padding:0}
     header h1{font-size:clamp(18px,5.6vw,30px)}
     header h1 em{display:block;margin:2px 0 0}
@@ -334,7 +341,7 @@
   }
   /* Short phones: footer on one line to give the coupons more room */
   @media (max-width:820px) and (max-height:700px){
-    body{gap:8px;padding-top:calc(8px + 40px)}
+    body{gap:8px;padding-top:calc(8px + 40px + var(--safe-t))}
     .deck{gap:10px}
     footer{flex-direction:row;justify-content:center;align-items:baseline;gap:10px}
     footer span:first-child{font-size:16px}
@@ -342,13 +349,13 @@
   }
   /* ---------- 5-second intro: "system update" to version 30 ---------- */
   .intro{
-    --bar-drop:clamp(18px,3vmin,28px);
+    --phrase-gap:clamp(4px,0.8vmin,8px);
     --phrase-line:clamp(26.4px,4.4vmin,37.4px);
     --bar-grow:clamp(6.3px,1.08vmin,9px);
     --phrase-grow:clamp(2.3px,0.39vmin,3.2px);
     position:fixed;inset:0;z-index:50;background:var(--bg);overflow:hidden;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,2vmin,18px);
-    padding:24px;text-align:center;transition:opacity .6s ease, transform .6s ease
+    padding:calc(24px + var(--safe-t)) 24px calc(24px + var(--safe-b));text-align:center;transition:opacity .6s ease, transform .6s ease
   }
   .intro.out{opacity:0;transform:scale(1.08);pointer-events:none}
   .intro .blob{position:absolute;border-radius:50%;filter:blur(0);opacity:.9}
@@ -357,7 +364,7 @@
   .intro .b3{width:16vmax;height:16vmax;right:6vw;top:-6vmax;background:var(--pink)}
   .intro > *:not(.blob){position:relative}
   /* the old button's footprint stays in the layout so nothing else moves */
-  .start-spot{width:clamp(84px,15vmin,120px);height:clamp(84px,15vmin,120px);flex-shrink:0;margin-bottom:calc(-1 * (clamp(22px,3.4vmin,36px) + clamp(28px,5vmin,52px) + var(--bar-drop) + var(--phrase-line) + var(--bar-grow) + var(--phrase-grow)))}
+  .start-spot{width:clamp(84px,15vmin,120px);height:clamp(84px,15vmin,120px);flex-shrink:0;margin-bottom:calc(-1 * (clamp(22px,3.4vmin,36px) + var(--phrase-gap) + var(--phrase-line) + var(--bar-grow) + var(--phrase-grow)))}
   .intro > .start{position:absolute;left:50%;top:auto;bottom:24px;margin-left:calc(clamp(110px,19.68vmin,157.4px) / -2)}
   .intro.is-cover > :not(.blob):not(.start){display:none}
   .intro h2{
@@ -391,7 +398,7 @@
   @keyframes stripes{to{background-position:28px 0}}
   .ver{display:flex;justify-content:space-between;margin-top:.45em;font-weight:800;color:var(--navy);font-size:clamp(17.16px,2.652vmin,21.84px)}
   .status{
-    width:min(504px,calc(100vw - 80px));margin:clamp(22px,3.4vmin,36px) 0 calc(clamp(28px,5vmin,52px) + var(--bar-drop));
+    width:min(504px,calc(100vw - 80px));margin:clamp(22px,3.4vmin,36px) 0 var(--phrase-gap);
     min-height:calc(1.35em + var(--phrase-line));line-height:1.35;
     font-weight:700;color:var(--deep);font-size:clamp(18.59px,3.146vmin,25.74px);transition:opacity .2s
   }
@@ -1071,7 +1078,8 @@
       btn.style.left = "";
       btn.style.right = "";
       var top = document.querySelector(".intro .ver").getBoundingClientRect().bottom;
-      var space = window.innerHeight - top;
+      var safeB = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--safe-b")) || 0;
+      var space = window.innerHeight - safeB - top;
       btn.style.marginLeft = (-size / 2) + "px";
       btn.style.top = (top + Math.max(8, (space - size) / 2)) + "px";
     }
@@ -1133,7 +1141,25 @@
       btn.textContent = step >= 10 ? t.introOpen : t.introTap;
       btn.classList.toggle("ready", step >= 10);
     }
+    function fillPhone(){
+      var touch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+      if (!touch) return;
+      var root = document.documentElement;
+      if (document.fullscreenElement || document.webkitFullscreenElement) return;
+      var ask = root.requestFullscreen || root.webkitRequestFullscreen;
+      if (!ask) return;
+      var pending;
+      try { pending = ask.call(root, {navigationUI:"hide"}); }
+      catch (e){
+        try { pending = ask.call(root); }
+        catch (e2){ return; }
+      }
+      if (pending && pending.catch) pending.catch(function(){});
+    }
+    document.addEventListener("fullscreenchange", function(){ if (intro.isConnected) placeButton(); });
+    document.addEventListener("webkitfullscreenchange", function(){ if (intro.isConnected) placeButton(); });
     btn.addEventListener("click", function(){
+      fillPhone();
       if (intro.classList.contains("is-cover")){
         intro.classList.remove("is-cover");
         stopWander();
