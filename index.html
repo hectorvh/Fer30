@@ -17,6 +17,7 @@
     --cream:#FFF8EC;
     --white:#fff;
     --notch:clamp(14px,2.6vmin,26px);
+    --base:clamp(11px,1.75vmin,16px);
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%;overflow:hidden}
@@ -32,7 +33,7 @@
   header{display:flex;align-items:center;justify-content:center;padding:0 clamp(112px,20vw,170px)}
   header h1{
     margin:0;text-align:center;font-family:Fredoka,Poppins,sans-serif;font-weight:600;
-    font-size:clamp(26px,6.4vmin,68px);line-height:1.1;color:var(--navy);letter-spacing:.01em
+    font-size:clamp(22px,5.6vmin,60px);line-height:1.1;color:var(--navy);letter-spacing:.01em
   }
   header h1 em{
     font-family:Courgette,cursive;font-style:normal;font-weight:400;color:var(--pink);
@@ -79,7 +80,7 @@
   body.is-paused .spark{animation-play-state:paused}
 
   /* ---------- Deck & ticket shape ---------- */
-  .deck{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(3,minmax(0,1fr));gap:clamp(24px,4.6vmin,56px)}
+  .deck{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(3,minmax(0,1fr));gap:clamp(14px,3.4vmin,44px)}
   .card{
     min-height:0;min-width:0;display:flex;flex-direction:row;
     border-radius:clamp(6px,1vmin,10px);overflow:hidden;position:relative;
@@ -102,9 +103,9 @@
   .stage{position:absolute;inset:0;container-type:size}
   .float{
     position:absolute;z-index:1;aspect-ratio:1;height:auto;transform-origin:center center;
-    width:min(40cqw,48cqh);
-    left:calc(50% - min(20cqw, 24cqh));
-    top:calc(50% - min(20cqw, 24cqh));
+    width:min(78cqw,64cqh);
+    left:calc(50% - min(39cqw, 32cqh));
+    top:calc(50% - min(39cqw, 32cqh));
     transform:rotate(0deg) scale(1)
   }
   .float img,.float svg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
@@ -181,9 +182,13 @@
   /* ---------- Body with blobs ---------- */
   .body{
     flex:1;min-height:0;min-width:0;position:relative;overflow:hidden;
-    display:flex;flex-direction:column;gap:clamp(3px,.8vmin,8px);
+    display:flex;flex-direction:column;gap:.45em;
+    font-size:calc(var(--base) * var(--fs,1));
     padding:clamp(10px,2vmin,24px) clamp(14px,2.8vmin,34px)
   }
+  .body.tight .kicker{display:none}
+  .body.tighter .joke{display:none}
+  .body > .kicker,.body > h2,.body > .joke,.body > .fine{flex-shrink:0}
   .body > .blobs{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
   .body > :not(.blobs):not(.spark){position:relative;z-index:1}
 
@@ -193,18 +198,18 @@
   }
   @keyframes twinkle{0%,100%{transform:scale(.7) rotate(0);opacity:.6}50%{transform:scale(1.15) rotate(20deg);opacity:1}}
 
-  .kicker{margin:0;font-size:clamp(9px,1.3vmin,12px);font-weight:700;letter-spacing:.24em;text-transform:uppercase}
+  .kicker{margin:0;font-size:.72em;font-weight:700;letter-spacing:.24em;text-transform:uppercase}
   h2{
-    margin:0;font-family:Courgette,cursive;font-weight:400;line-height:1.15;
-    font-size:clamp(18px,4.2vmin,42px);white-space:nowrap;overflow:hidden;padding-bottom:.06em
+    margin:0;font-family:Courgette,cursive;font-weight:400;line-height:1.3;
+    font-size:calc(var(--ts,2.5) * 1em);white-space:nowrap;overflow:hidden;padding:.04em 0 .16em
   }
-  .joke{margin:0;font-size:clamp(11px,1.75vmin,15px);line-height:1.4;font-weight:500;min-height:0;overflow:hidden;max-width:62ch}
+  .joke{margin:0;font-size:1em;line-height:1.4;font-weight:500;max-width:62ch}
   .fine{
-    margin-top:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(6px,1.4vmin,14px);
-    padding-top:clamp(6px,1vmin,10px);border-top:2px dashed currentColor
+    margin-top:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8em;
+    padding-top:.5em;border-top:2px dashed currentColor
   }
-  .fine b{display:block;font-size:clamp(8px,1.1vmin,11px);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.3em}
-  .fine span{font-size:clamp(10px,1.5vmin,14px);line-height:1.35;font-weight:700}
+  .fine b{display:block;font-size:.66em;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.3em}
+  .fine span{display:block;font-size:.9em;line-height:1.35;font-weight:700}
   .fine a{color:inherit;font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
   [contenteditable]{outline:none;border-radius:4px}
   [contenteditable]:hover{background:rgba(255,255,255,.22)}
@@ -220,7 +225,7 @@
   /* Coupon 2: navy with yellow splashes */
   .c2 .body{background:var(--navy);color:var(--white)}
   .c2 .kicker{color:#8FE7F0}
-  .c2 h2{color:var(--yellow)}
+  .c2 h2{color:var(--yellow);text-shadow:2px 2px 0 var(--deep)}
   .c2 .fine{color:var(--white);border-top-color:rgba(255,255,255,.4)}
   .c2 .fine b{color:#8FE7F0}
 
@@ -260,29 +265,50 @@
   .c3 .stub{background:var(--yellow);color:var(--deep);--bar:var(--navy)}
 
   footer{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;line-height:1.15}
-  footer span:first-child{font-family:Fredoka,Poppins,sans-serif;font-weight:600;font-size:clamp(20px,3.8vmin,40px);color:var(--navy)}
-  footer span:last-child{font-family:Courgette,cursive;font-size:clamp(22px,4.2vmin,44px);color:var(--pink);text-shadow:1px 1px 0 var(--yellow)}
+  footer span:first-child{font-family:Fredoka,Poppins,sans-serif;font-weight:600;font-size:clamp(16px,3.2vmin,34px);color:var(--navy)}
+  footer span:last-child{font-family:Courgette,cursive;font-size:clamp(18px,3.6vmin,38px);color:var(--pink);text-shadow:1px 1px 0 var(--yellow)}
 
-  /* ---------- Narrow screens ---------- */
+  /* ---------- Phones (portrait): same horizontal tickets, all on one screen ---------- */
   @media (max-width:820px){
-    :root{--notch:11px}
-    body{padding-top:calc(clamp(8px,1.6vmin,16px) + 40px)}
+    :root{--notch:10px;--base:clamp(10px,3.3vw,14px)}
+    body{padding:calc(10px + 40px) 12px calc(10px + env(safe-area-inset-bottom));gap:10px}
+    .lang{background:rgba(255,255,255,.85);padding:4px 8px;border-radius:999px}
     header{padding:0}
-    header h1 em{display:block;margin:4px 0 0}
-    .deck{gap:22px}
+    header h1{font-size:clamp(18px,5.6vw,30px)}
+    header h1 em{display:block;margin:2px 0 0}
+    .deck{gap:12px}
     .art{flex:0 0 28%}
-    .body{padding:8px 10px 8px 12px;gap:3px}
-    .kicker{font-size:8.5px;letter-spacing:.12em}
-    h2{font-size:clamp(17px,5.4vw,24px)}
-    .joke{font-size:clamp(10px,3vw,13px);line-height:1.35}
-    .fine{gap:6px;padding-top:5px}
-    .fine b{font-size:8px}
-    .fine span{font-size:clamp(10px,2.8vw,12px)}
-    .stamp{width:36px;height:36px;font-size:6.5px;right:6px;top:6px}
-    .stub{flex:0 0 34px;padding:8px 13px 8px 6px}
+    .body{padding:8px 8px 8px 12px}
+    .kicker{letter-spacing:.1em}
+    .stamp{width:34px;height:34px;font-size:6px;right:5px;top:5px}
+    .stub{flex:0 0 28px;padding:8px 11px 8px 3px}
+    .joke{line-height:1.3}
     .stub .label{display:none}
-    .barcode{width:14px}
+    .barcode{width:12px}
     .spark{display:none}
+    footer span:first-child{font-size:18px}
+    footer span:last-child{font-size:21px}
+  }
+  /* ---------- Short screens (phone sideways): slimmer header, one-line footer ---------- */
+  @media (max-height:520px){
+    body{padding:8px 12px;gap:6px}
+    header{padding:0 76px}
+    header h1{font-size:clamp(16px,6vmin,26px)}
+    header h1 em{display:inline;margin-left:.3em}
+    .deck{gap:8px}
+    .stamp{display:none}
+    .spark{display:none}
+    footer{flex-direction:row;gap:12px;align-items:baseline}
+    footer span:first-child{font-size:15px}
+    footer span:last-child{font-size:17px}
+  }
+  /* Short phones: footer on one line to give the coupons more room */
+  @media (max-width:820px) and (max-height:700px){
+    body{gap:8px;padding-top:calc(8px + 40px)}
+    .deck{gap:10px}
+    footer{flex-direction:row;justify-content:center;align-items:baseline;gap:10px}
+    footer span:first-child{font-size:16px}
+    footer span:last-child{font-size:18px}
   }
   @media print{
     body{background:#fff;height:100vh}
@@ -345,7 +371,7 @@
       <h2 data-i18n="title1">Romantic dinner at Grano</h2>
       <p class="joke" data-i18n="joke1">Turning 30 means still not knowing what you want to be when you grow up…but who’s hungry?</p>
       <div class="fine">
-        <div><b data-i18n="where">Where</b><span><a href="https://maps.app.goo.gl/x9sc4Ac6hsAU9Stv8" target="_blank" rel="noopener">Grano, Dublin 7</a></span></div>
+        <div><b data-i18n="where">Where</b><span><a href="https://maps.app.goo.gl/x9sc4Ac6hsAU9Stv8" target="_blank" rel="noopener">Grano, Dublin</a></span></div>
         <div><b data-i18n="when">When</b><span contenteditable="true" spellcheck="false" data-i18n="when1">Whenever you want</span></div>
       </div>
     </div>
@@ -561,6 +587,28 @@
     });
   }
 
+  function fitCards(){
+    document.querySelectorAll(".card .body").forEach(function(b){
+      b.classList.remove("tight", "tighter");
+      b.style.setProperty("--ts", 2.5);
+      b.querySelectorAll("h2").forEach(function(h){ h.style.fontSize = ""; });
+      var fs = 1;
+      b.style.setProperty("--fs", fs);
+      var base = parseFloat(getComputedStyle(b).fontSize);
+      var floor = Math.min(1, 10.5 / base);
+      while (b.scrollHeight > b.clientHeight + 1 && fs - 0.03 >= floor){
+        fs -= 0.03;
+        b.style.setProperty("--fs", fs.toFixed(2));
+      }
+      var over = function(){ return b.scrollHeight > b.clientHeight + 1; };
+      var ts = 2.5;
+      while (over() && ts > 1.7){ ts -= 0.1; b.style.setProperty("--ts", ts.toFixed(2)); }
+      if (over()) b.classList.add("tight");
+      if (over()) b.classList.add("tighter");
+    });
+  }
+  function fitAll(){ fitCards(); fitTitles(); }
+
   function setLang(lang){
     var from = T[current], to = T[lang];
     document.querySelectorAll("[data-i18n]").forEach(function(el){
@@ -577,7 +625,7 @@
     document.getElementById("lbl-en").classList.toggle("on", lang === "en");
     document.getElementById("lbl-es").classList.toggle("on", lang === "es");
     paintPlayback();
-    fitTitles();
+    fitAll();
   }
 
   document.getElementById("langSwitch").addEventListener("click", function(){
@@ -591,7 +639,7 @@
 
   function rand(min, max){ return min + Math.random() * (max - min); }
   function place(x, y, angle, scale){
-    var span = "(100% - min(40cqw, 48cqh))";
+    var span = "(100% - min(78cqw, 64cqh))";
     return {
       left:"calc(" + x.toFixed(3) + " * " + span + ")",
       top:"calc(" + y.toFixed(3) + " * " + span + ")",
@@ -601,7 +649,7 @@
   function nextStop(state){
     var best = null, bestDist = 0;
     for (var i = 0; i < 8; i++){
-      var point = { x:rand(0,1), y:rand(0,1), angle:rand(-60,60), scale:rand(.8,1.4) };
+      var point = { x:rand(0,1), y:rand(0,1), angle:rand(-35,35), scale:rand(.9,1.15) };
       var dist = Math.hypot(point.x - state.x, point.y - state.y);
       if (dist > bestDist){ best = point; bestDist = dist; }
       if (dist >= .5) return { point:point, dist:dist };
@@ -683,13 +731,15 @@
   playBirthday();
   document.addEventListener("pointerdown", playBirthday);
   document.addEventListener("keydown", playBirthday);
+  document.querySelectorAll(".body [contenteditable]").forEach(function(el){
+    el.addEventListener("input", fitAll);
+  });
   document.querySelectorAll("h2[contenteditable]").forEach(function(h){
-    h.addEventListener("input", fitTitles);
     h.addEventListener("keydown", function(e){ if (e.key === "Enter") e.preventDefault(); });
   });
-  window.addEventListener("resize", fitTitles);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTitles);
-  fitTitles();
+  window.addEventListener("resize", fitAll);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+  fitAll();
 </script>
 </body>
 </html>
