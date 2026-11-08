@@ -1056,30 +1056,24 @@
       if (attempt && attempt.catch) attempt.catch(function(){});
     }
 
-    // Big round button: 60% larger, centered in the space under the text
-    var spot = document.getElementById("startSpot");
+    // Same circle as the opening animation: clamp(110px, 19.68vmin, 157.4px)
+    function buttonSize(){
+      var vmin = Math.min(window.innerWidth, window.innerHeight);
+      return Math.max(110, Math.min(vmin * 0.1968, 157.4));
+    }
     function placeButton(){
-      var size;
+      var size = buttonSize();
       btn.style.bottom = "auto";
-      if (intro.classList.contains("is-cover")){
-        var vmin = Math.min(window.innerWidth, window.innerHeight);
-        size = Math.max(110, Math.min(vmin * 0.1968, 157.4));
-        btn.style.width = btn.style.height = size + "px";
-        btn.style.fontSize = (size * 0.23) + "px";
-        return;
-      }
-      size = Math.max(56, Math.min(spot.offsetWidth * 1.312, window.innerHeight - 28));
+      btn.style.width = btn.style.height = size + "px";
+      btn.style.fontSize = (size * 0.23) + "px";
+      if (intro.classList.contains("is-cover")) return;
       btn.style.transition = "none";
       btn.style.left = "";
       btn.style.right = "";
-      btn.style.bottom = "";
       var top = document.querySelector(".intro .ver").getBoundingClientRect().bottom;
       var space = window.innerHeight - top;
-      size = Math.max(56, Math.min(spot.offsetWidth * 1.312, space - 28));
-      btn.style.width = btn.style.height = size + "px";
-      btn.style.fontSize = (size * 0.23) + "px";
       btn.style.marginLeft = (-size / 2) + "px";
-      btn.style.top = (top + (space - size) / 2 - 4) + "px";
+      btn.style.top = (top + Math.max(8, (space - size) / 2)) + "px";
     }
     var blobs = [].slice.call(intro.querySelectorAll(".blob"));
     function pin(el){
