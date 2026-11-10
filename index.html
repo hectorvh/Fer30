@@ -792,7 +792,7 @@
       foot1:"Happy 30th", foot2:"With love, Hector",
       flip:"↻ Tap to flip", flipBack:"↻ Tap to flip back",
       introTitle:"Updating Fercheese…", introDone:"Fercheese 30.0 is ready!", introTap:"Tap", introOpen:"Open!",
-      introSteps:["Fercheese 29.9 needs an update","Uninstalling the twenties…","Securing the vault of questionable choices...","Installing back pain…","Downloading retirement panic…","Accepting that your music taste is now \u201cthe classics\u201d…","Warning: your warranty expires at 30...","Adding the phrase \u201cI\u2019m too old for this\u201d…","Calibrating knee crack sounds…","Almost there… the 30s are coming for the birthday girl","Level 30 unlocked: groaning every time you stand up from the couch"],
+      introSteps:["Fercheese 29.9 needs an update","Uninstalling the twenties…","Securing the vault of questionable choices...","Installing back pain…","Downloading retirement panic…","Accepting that your music taste is now \u201cthe classics\u201d…","Warning: your warranty expires at 30...","Adding the phrase \u201cI\u2019m too old for this\u201d…","Calibrating knee crack sounds…","Almost there… the 30s are coming for the birthday girl","Level unlocked: groaning every time you stand up"],
       pause:"Pause", play:"Play", restart:"Double-click to restart the song"
     },
     es: {
@@ -811,7 +811,7 @@
       foot1:"Feliz cumpleaños 30", foot2:"Con amor, Hector",
       flip:"↻ Toca para voltear", flipBack:"↻ Toca para regresar",
       introTitle:"Actualizando a Fercheese…", introDone:"¡Fercheese 30.0 está lista!", introTap:"Toca", introOpen:"¡Abrir!",
-      introSteps:["Fercheese 29.9 necesita una actualización","Desinstalando los veintes…","Asegurando la bóveda de decisiones cuestionables...","Instalando dolor de espalda…","Descargando pánico de jubilación…","Aceptando que mi gusto musical ya son \u201clos clásicos\u201d…","Aviso: tu garantía vence a los 30...","Agregando la frase \u201cya estoy vieja para esto\u201d…","Calibrando el crujido de rodillas…","Casi listo… los 30 ya vienen por la cumpleañera","Nivel 30 desbloqueado: quejarte cada vez que te levantas del sofá"],
+      introSteps:["Fercheese 29.9 necesita una actualización","Desinstalando los veintes…","Asegurando la bóveda de decisiones cuestionables...","Instalando dolor de espalda…","Descargando pánico de jubilación…","Aceptando que mi gusto musical ya son \u201clos clásicos\u201d…","Aviso: tu garantía vence a los 30...","Agregando la frase \u201cya estoy vieja para esto\u201d…","Calibrando el crujido de rodillas…","Casi listo… los 30 ya vienen por la cumpleañera","Nivel desbloqueado: quejarte cada vez que te levantas del sofá"],
       pause:"Pausar", play:"Reproducir", restart:"Doble clic para reiniciar la canción"
     }
   };
@@ -1064,12 +1064,19 @@
       var attempt = song.play();
       if (attempt && attempt.catch) attempt.catch(function(){});
     }
+    function armSong(){
+      var attempt = song.play();
+      var hush = function(){ if (coverStage !== "intro"){ song.pause(); song.currentTime = 0; } };
+      hush();
+      if (attempt && attempt.then) attempt.then(hush, function(){});
+    }
 
     // Same circle as the opening animation: clamp(110px, 19.68vmin, 157.4px)
     function buttonSize(){
       var vmin = Math.min(window.innerWidth, window.innerHeight);
       return Math.max(110, Math.min(vmin * 0.1968, 157.4));
     }
+    var coverStage = "still";
     function placeButton(){
       var size = buttonSize();
       btn.style.bottom = "auto";
@@ -1084,6 +1091,17 @@
       var space = window.innerHeight - safeB - top;
       btn.style.marginLeft = (-size / 2) + "px";
       btn.style.top = (top + Math.max(8, (space - size) / 2)) + "px";
+    }
+    function centerButton(){
+      var size = buttonSize();
+      btn.style.transition = "none";
+      btn.style.bottom = "auto";
+      btn.style.right = "auto";
+      btn.style.width = btn.style.height = size + "px";
+      btn.style.fontSize = (size * 0.23) + "px";
+      btn.style.marginLeft = "0";
+      btn.style.left = Math.max(0, (window.innerWidth - size) / 2) + "px";
+      btn.style.top = Math.max(0, (window.innerHeight - size) / 2) + "px";
     }
     var blobs = [].slice.call(intro.querySelectorAll(".blob"));
     function pin(el){
@@ -1102,7 +1120,7 @@
       var pad = 8;
       var x = big ? rand(-w * 0.72, window.innerWidth - w * 0.12) : rand(pad, Math.max(pad, window.innerWidth - w - pad));
       var y = big ? rand(-h * 0.62, window.innerHeight - h * 0.12) : rand(pad, Math.max(pad, window.innerHeight - h - pad));
-      var dur = big ? rand(1800, 4200) : rand(380, 820);
+      var dur = big ? rand(1800, 4200) : (coverStage === "rush" ? rand(80, 140) : rand(380, 820));
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) dur *= 2.6;
       el.style.transition = "left " + dur.toFixed(0) + "ms cubic-bezier(.4,.05,.6,1), top " + dur.toFixed(0) + "ms cubic-bezier(.4,.05,.6,1)";
       el.style.left = x.toFixed(1) + "px";
@@ -1127,13 +1145,15 @@
       void intro.offsetWidth;
       blobs.concat(btn).forEach(hop);
     }
-    window.addEventListener("resize", function(){
-      placeButton();
-      if (intro.classList.contains("is-cover")) startWander();
-    });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeButton);
-    placeButton();
-    startWander();
+    function layoutCover(){
+      if (!intro.isConnected) return;
+      if (!intro.classList.contains("is-cover")){ placeButton(); return; }
+      if (coverStage === "still") centerButton();
+      else startWander();
+    }
+    window.addEventListener("resize", layoutCover);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ if (coverStage === "still") centerButton(); });
+    centerButton();
     function paint(){
       var t = T[current];
       bar.style.width = (step * 10) + "%";
@@ -1158,18 +1178,36 @@
       }
       if (pending && pending.catch) pending.catch(function(){});
     }
-    document.addEventListener("fullscreenchange", function(){ if (intro.isConnected) placeButton(); });
-    document.addEventListener("webkitfullscreenchange", function(){ if (intro.isConnected) placeButton(); });
+    document.addEventListener("fullscreenchange", layoutCover);
+    document.addEventListener("webkitfullscreenchange", layoutCover);
+    var rushTimer = null;
+    function beginIntro(){
+      if (!intro.classList.contains("is-cover")) return;
+      coverStage = "intro";
+      clearTimeout(rushTimer);
+      intro.classList.remove("is-cover");
+      stopWander();
+      playSong();
+      paint();
+      placeButton();
+    }
     btn.addEventListener("click", function(){
-      fillPhone();
-      if (intro.classList.contains("is-cover")){
-        intro.classList.remove("is-cover");
-        stopWander();
-        playSong();
-        paint();
-        placeButton();
+      if (coverStage === "still"){
+        fillPhone();
+        armSong();
+        coverStage = "wander";
+        startWander();
         return;
       }
+      if (coverStage === "wander"){
+        armSong();
+        coverStage = "rush";
+        clearTimeout(btn._hop);
+        hop(btn);
+        rushTimer = setTimeout(beginIntro, 2000);
+        return;
+      }
+      if (coverStage === "rush") return;
       if (step < 10){
         playSong();
         step++;
