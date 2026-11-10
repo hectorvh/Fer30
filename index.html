@@ -383,13 +383,16 @@
   .intro.is-cover > :not(.blob):not(.start):not(.goal):not(.slow){display:none}
   .intro > .goal{
     display:none;position:absolute;z-index:2;left:50%;top:calc(clamp(48px,9vmin,90px) + var(--safe-t));
-    transform:translateX(-50%);margin:0;max-width:calc(100% - 32px);pointer-events:none;
+    transform:translateX(-50%);margin:0;width:calc(100% - clamp(160px,32vmin,400px));max-width:calc(100% - clamp(160px,32vmin,400px));pointer-events:none;
     font-family:"Lilita One",Fredoka,sans-serif;font-weight:400;color:var(--navy);
-    font-size:clamp(22px,5vmin,42px);line-height:1.1;text-align:center;text-shadow:2px 2px 0 var(--yellow)
+    font-size:clamp(33px,7.5vmin,63px);line-height:1.1;text-align:center;text-shadow:2px 2px 0 var(--yellow)
   }
   .intro.is-count .goal{display:block}
+  .intro.is-count .start::before{
+    content:"";position:absolute;inset:-46%;border-radius:50%;background:rgba(255,255,255,.01)
+  }
   .intro > .slow{
-    display:none;position:absolute;z-index:4;inset:0;background:var(--bg);
+    display:none;position:absolute;z-index:4;inset:0;background:transparent;
     flex-direction:column;align-items:center;justify-content:center;text-align:center;
     gap:clamp(14px,3vmin,28px);padding:24px
   }
@@ -399,7 +402,7 @@
     font-size:clamp(26px,6vmin,48px);line-height:1.1;text-shadow:2px 2px 0 var(--yellow)
   }
   .intro.is-slow .slow{display:flex}
-  .intro.is-slow .blob,.intro.is-slow .start,.intro.is-slow .goal{display:none}
+  .intro.is-slow .start,.intro.is-slow .goal{display:none}
   .intro h2{
     margin:0;padding:0;font-family:"Lilita One",Fredoka,sans-serif;font-weight:400;color:var(--navy);
     font-size:clamp(32.29px,7.452vmin,69.55px);line-height:1.1;text-shadow:2px 2px 0 var(--yellow);white-space:normal;overflow:visible;
@@ -497,9 +500,9 @@
 <div class="pull" id="pull" hidden><i></i></div>
 <div class="intro is-cover" id="intro" role="dialog" aria-label="Intro">
   <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
-  <p class="goal" id="introGoal" data-i18n="tapGoal">Tap up to 30</p>
+  <p class="goal" id="introGoal" data-i18n="tapGoal">Tap the button until you reach 30...</p>
   <div class="slow" id="introSlow">
-    <img src="dewee.webp" alt="">
+    <img src="dewee.png" alt="">
     <p data-i18n="tooSlow">Too slow for an oldie</p>
   </div>
   <h2 id="introTitle" data-i18n="introTitle">Updating Fercheese…</h2>
@@ -781,6 +784,7 @@
 
 <audio id="birthday" src="cumpleaños.m4a" preload="auto"></audio>
 <audio id="introSong" src="bienvenidos30cut.wav" preload="auto" loop></audio>
+<audio id="chase" src="sisepuede.m4a" preload="auto"></audio>
 
 <script>
   // The back of each coupon reuses the front's picture, colors and barcode; only the text changes
@@ -816,7 +820,7 @@
       foot1:"Happy 30th", foot2:"With love, Hector",
       flip:"↻ Tap to flip", flipBack:"↻ Tap to flip back",
       introTitle:"Updating Fercheese…", introDone:"Fercheese 30.0 is ready!", introTap:"Tap", introOpen:"Open!",
-      tapGoal:"Tap up to 30", tooSlow:"Too slow for an oldie",
+      tapGoal:"Tap the button until you reach 30...", tooSlow:"Too slow for an oldie",
       introSteps:["Fercheese 29.9 needs an update","Uninstalling the twenties…","Securing the vault of questionable choices...","Installing back pain…","Downloading retirement panic…","Accepting that your music taste is now \u201cthe classics\u201d…","Warning: your warranty expires at 30...","Adding the phrase \u201cI\u2019m too old for this\u201d…","Calibrating knee crack sounds…","Almost there… the 30s are coming for the birthday girl","Level unlocked: groaning every time you stand up"],
       pause:"Pause", play:"Play", restart:"Double-click to restart the song"
     },
@@ -836,7 +840,7 @@
       foot1:"Feliz cumpleaños 30", foot2:"Con amor, Hector",
       flip:"↻ Toca para voltear", flipBack:"↻ Toca para regresar",
       introTitle:"Actualizando a Fercheese…", introDone:"¡Fercheese 30.0 está lista!", introTap:"Toca", introOpen:"¡Abrir!",
-      tapGoal:"Toca hasta 30", tooSlow:"Demasiado lenta para una viejita",
+      tapGoal:"Toca el botón hasta que llegues a 30", tooSlow:"Demasiado lenta para una viejita",
       introSteps:["Fercheese 29.9 necesita una actualización","Desinstalando los veintes…","Asegurando la bóveda de decisiones cuestionables...","Instalando dolor de espalda…","Descargando pánico de jubilación…","Aceptando que mi gusto musical ya son \u201clos clásicos\u201d…","Aviso: tu garantía vence a los 30...","Agregando la frase \u201cya estoy vieja para esto\u201d…","Calibrando el crujido de rodillas…","Casi listo… los 30 ya vienen por la cumpleañera","Nivel desbloqueado: quejarte cada vez que te levantas del sofá"],
       pause:"Pausar", play:"Reproducir", restart:"Doble clic para reiniciar la canción"
     }
@@ -1017,7 +1021,14 @@
       if (!mover.anim || mover.anim.playState === "finished") hop(mover.el, mover);
     });
     if (on){
-      if (afterBirthday){
+      var cover = document.getElementById("intro");
+      if (cover && cover.classList.contains("is-count")){
+        var chaseEl = document.getElementById("chase");
+        if (chaseEl.currentTime > 0 && !chaseEl.ended){
+          var chaseTry = chaseEl.play();
+          if (chaseTry && chaseTry.catch) chaseTry.catch(function(){});
+        }
+      } else if (afterBirthday){
         var again = welcome.play();
         if (again && again.catch) again.catch(function(){});
       } else {
@@ -1029,6 +1040,7 @@
     } else {
       birthday.pause();
       welcome.pause();
+      document.getElementById("chase").pause();
     }
     paintPlayback();
   }
@@ -1084,7 +1096,29 @@
     var cake = document.getElementById("introCake");
     var step = 0;
     var song = document.getElementById("introSong");
+    var chase = document.getElementById("chase");
     song.loop = true;
+    chase.loop = false;
+    var chaseFade = null;
+    function playChase(){
+      if (!chase.paused) return;
+      chase.volume = 0;
+      var attempt = chase.play();
+      if (attempt && attempt.catch) attempt.catch(function(){});
+      clearInterval(chaseFade);
+      var started = performance.now();
+      chaseFade = setInterval(function(){
+        var t = Math.min(1, (performance.now() - started) / 800);
+        chase.volume = 0.7 * t;
+        if (t >= 1) clearInterval(chaseFade);
+      }, 40);
+    }
+    function stopChase(){
+      clearInterval(chaseFade);
+      chase.pause();
+      chase.currentTime = 0;
+      chase.volume = 0;
+    }
     function playSong(){
       if (!introActive || !song.paused) return;
       var attempt = song.play();
@@ -1170,9 +1204,11 @@
         el.style.marginLeft = "";
       });
     }
+    var blobHome = null;
     function startWander(){
       if (!intro.classList.contains("is-cover")) return;
       blobs.concat(btn).forEach(function(el){ clearTimeout(el._hop); pin(el); });
+      if (!blobHome) blobHome = blobs.map(function(el){ return {left: el.style.left, top: el.style.top}; });
       void intro.offsetWidth;
       blobs.concat(btn).forEach(hop);
     }
@@ -1213,15 +1249,27 @@
     document.addEventListener("webkitfullscreenchange", layoutCover);
     function armIdle(){
       clearTimeout(idleTimer);
-      if (coverStage === "count" && taps >= 4) idleTimer = setTimeout(showSlow, 5000);
+      if (coverStage === "count" && taps > 0) idleTimer = setTimeout(showSlow, 4500);
     }
     function showSlow(){
       if (coverStage === "slow" || coverStage === "intro") return;
       coverStage = "slow";
       clearTimeout(idleTimer);
+      blobs.forEach(function(el, i){
+        clearTimeout(el._hop);
+        el.style.transition = "none";
+        el.style.right = "auto";
+        el.style.bottom = "auto";
+        el.style.marginLeft = "0";
+        if (blobHome && blobHome[i]){
+          el.style.left = blobHome[i].left;
+          el.style.top = blobHome[i].top;
+        } else pin(el);
+      });
+      clearTimeout(btn._hop);
       intro.classList.remove("is-count");
       intro.classList.add("is-slow");
-      stopWander();
+      stopChase();
       playSong();
       setTimeout(beginIntro, 4000);
     }
@@ -1242,7 +1290,7 @@
         coverStage = "count";
         taps = 0;
         btn.textContent = "0";
-        btn.style.fontSize = (buttonSize() * 0.5888) + "px";
+        btn.style.fontSize = (buttonSize() * 0.52992) + "px";
         intro.classList.add("is-count");
         startWander();
         armIdle();
@@ -1252,9 +1300,10 @@
         armSong();
         taps++;
         btn.textContent = String(taps);
-        btn.style.fontSize = (buttonSize() * 0.5888) + "px";
+        btn.style.fontSize = (buttonSize() * 0.52992) + "px";
         clearTimeout(btn._hop);
         hop(btn);
+        if (taps === 1) playChase();
         if (taps >= 7){ showSlow(); return; }
         armIdle();
         return;
