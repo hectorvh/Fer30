@@ -380,7 +380,26 @@
   /* the old button's footprint stays in the layout so nothing else moves */
   .start-spot{width:clamp(84px,15vmin,120px);height:clamp(84px,15vmin,120px);flex-shrink:0;margin-bottom:calc(-1 * (clamp(22px,3.4vmin,36px) + var(--phrase-gap) + var(--phrase-line) + var(--bar-grow) + var(--phrase-grow)))}
   .intro > .start{position:absolute;left:50%;top:auto;bottom:24px;margin-left:calc(clamp(110px,19.68vmin,157.4px) / -2)}
-  .intro.is-cover > :not(.blob):not(.start){display:none}
+  .intro.is-cover > :not(.blob):not(.start):not(.goal):not(.slow){display:none}
+  .intro > .goal{
+    display:none;position:absolute;z-index:2;left:50%;top:calc(clamp(48px,9vmin,90px) + var(--safe-t));
+    transform:translateX(-50%);margin:0;max-width:calc(100% - 32px);pointer-events:none;
+    font-family:"Lilita One",Fredoka,sans-serif;font-weight:400;color:var(--navy);
+    font-size:clamp(22px,5vmin,42px);line-height:1.1;text-align:center;text-shadow:2px 2px 0 var(--yellow)
+  }
+  .intro.is-count .goal{display:block}
+  .intro > .slow{
+    display:none;position:absolute;z-index:4;inset:0;background:var(--bg);
+    flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    gap:clamp(14px,3vmin,28px);padding:24px
+  }
+  .slow img{width:min(52vmin,280px);height:auto;object-fit:contain}
+  .slow p{
+    margin:0;font-family:"Lilita One",Fredoka,sans-serif;font-weight:400;color:var(--navy);
+    font-size:clamp(26px,6vmin,48px);line-height:1.1;text-shadow:2px 2px 0 var(--yellow)
+  }
+  .intro.is-slow .slow{display:flex}
+  .intro.is-slow .blob,.intro.is-slow .start,.intro.is-slow .goal{display:none}
   .intro h2{
     margin:0;padding:0;font-family:"Lilita One",Fredoka,sans-serif;font-weight:400;color:var(--navy);
     font-size:clamp(32.29px,7.452vmin,69.55px);line-height:1.1;text-shadow:2px 2px 0 var(--yellow);white-space:normal;overflow:visible;
@@ -478,6 +497,11 @@
 <div class="pull" id="pull" hidden><i></i></div>
 <div class="intro is-cover" id="intro" role="dialog" aria-label="Intro">
   <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+  <p class="goal" id="introGoal" data-i18n="tapGoal">Tap up to 30</p>
+  <div class="slow" id="introSlow">
+    <img src="dewee.webp" alt="">
+    <p data-i18n="tooSlow">Too slow for an oldie</p>
+  </div>
   <h2 id="introTitle" data-i18n="introTitle">Updating Fercheese…</h2>
   <svg class="cake" id="introCake" viewBox="0 0 240 250" aria-hidden="true">
     <defs>
@@ -792,6 +816,7 @@
       foot1:"Happy 30th", foot2:"With love, Hector",
       flip:"↻ Tap to flip", flipBack:"↻ Tap to flip back",
       introTitle:"Updating Fercheese…", introDone:"Fercheese 30.0 is ready!", introTap:"Tap", introOpen:"Open!",
+      tapGoal:"Tap up to 30", tooSlow:"Too slow for an oldie",
       introSteps:["Fercheese 29.9 needs an update","Uninstalling the twenties…","Securing the vault of questionable choices...","Installing back pain…","Downloading retirement panic…","Accepting that your music taste is now \u201cthe classics\u201d…","Warning: your warranty expires at 30...","Adding the phrase \u201cI\u2019m too old for this\u201d…","Calibrating knee crack sounds…","Almost there… the 30s are coming for the birthday girl","Level unlocked: groaning every time you stand up"],
       pause:"Pause", play:"Play", restart:"Double-click to restart the song"
     },
@@ -811,6 +836,7 @@
       foot1:"Feliz cumpleaños 30", foot2:"Con amor, Hector",
       flip:"↻ Toca para voltear", flipBack:"↻ Toca para regresar",
       introTitle:"Actualizando a Fercheese…", introDone:"¡Fercheese 30.0 está lista!", introTap:"Toca", introOpen:"¡Abrir!",
+      tapGoal:"Toca hasta 30", tooSlow:"Demasiado lenta para una viejita",
       introSteps:["Fercheese 29.9 necesita una actualización","Desinstalando los veintes…","Asegurando la bóveda de decisiones cuestionables...","Instalando dolor de espalda…","Descargando pánico de jubilación…","Aceptando que mi gusto musical ya son \u201clos clásicos\u201d…","Aviso: tu garantía vence a los 30...","Agregando la frase \u201cya estoy vieja para esto\u201d…","Calibrando el crujido de rodillas…","Casi listo… los 30 ya vienen por la cumpleañera","Nivel desbloqueado: quejarte cada vez que te levantas del sofá"],
       pause:"Pausar", play:"Reproducir", restart:"Doble clic para reiniciar la canción"
     }
@@ -909,7 +935,7 @@
     fitAll();
     var cover = document.getElementById("intro");
     var coverBtn = document.getElementById("introStart");
-    if (cover && coverBtn && cover.classList.contains("is-cover")) coverBtn.textContent = to.introTap;
+    if (cover && coverBtn && cover.classList.contains("is-cover") && !cover.classList.contains("is-count") && !cover.classList.contains("is-slow")) coverBtn.textContent = to.introTap;
   }
 
   document.getElementById("langSwitch").addEventListener("click", function(){
@@ -1066,7 +1092,9 @@
     }
     function armSong(){
       var attempt = song.play();
-      var hush = function(){ if (coverStage !== "intro"){ song.pause(); song.currentTime = 0; } };
+      var hush = function(){
+        if (coverStage === "still" || coverStage === "count"){ song.pause(); song.currentTime = 0; }
+      };
       hush();
       if (attempt && attempt.then) attempt.then(hush, function(){});
     }
@@ -1077,6 +1105,8 @@
       return Math.max(110, Math.min(vmin * 0.1968, 157.4));
     }
     var coverStage = "still";
+    var taps = 0;
+    var idleTimer = null;
     function placeButton(){
       var size = buttonSize();
       btn.style.bottom = "auto";
@@ -1120,7 +1150,8 @@
       var pad = 8;
       var x = big ? rand(-w * 0.72, window.innerWidth - w * 0.12) : rand(pad, Math.max(pad, window.innerWidth - w - pad));
       var y = big ? rand(-h * 0.62, window.innerHeight - h * 0.12) : rand(pad, Math.max(pad, window.innerHeight - h - pad));
-      var dur = big ? rand(1800, 4200) : (coverStage === "rush" ? rand(80, 140) : rand(380, 820));
+      var pace = Math.max(0, Math.min(taps, 7)) / 7;
+      var dur = big ? rand(1800, 4200) : rand(380 + (80 - 380) * pace, 820 + (140 - 820) * pace);
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) dur *= 2.6;
       el.style.transition = "left " + dur.toFixed(0) + "ms cubic-bezier(.4,.05,.6,1), top " + dur.toFixed(0) + "ms cubic-bezier(.4,.05,.6,1)";
       el.style.left = x.toFixed(1) + "px";
@@ -1149,7 +1180,7 @@
       if (!intro.isConnected) return;
       if (!intro.classList.contains("is-cover")){ placeButton(); return; }
       if (coverStage === "still") centerButton();
-      else startWander();
+      else if (coverStage === "count") startWander();
     }
     window.addEventListener("resize", layoutCover);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ if (coverStage === "still") centerButton(); });
@@ -1180,12 +1211,25 @@
     }
     document.addEventListener("fullscreenchange", layoutCover);
     document.addEventListener("webkitfullscreenchange", layoutCover);
-    var rushTimer = null;
+    function armIdle(){
+      clearTimeout(idleTimer);
+      if (coverStage === "count" && taps >= 4) idleTimer = setTimeout(showSlow, 5000);
+    }
+    function showSlow(){
+      if (coverStage === "slow" || coverStage === "intro") return;
+      coverStage = "slow";
+      clearTimeout(idleTimer);
+      intro.classList.remove("is-count");
+      intro.classList.add("is-slow");
+      stopWander();
+      playSong();
+      setTimeout(beginIntro, 4000);
+    }
     function beginIntro(){
-      if (!intro.classList.contains("is-cover")) return;
+      if (coverStage === "intro" || !intro.classList.contains("is-cover")) return;
       coverStage = "intro";
-      clearTimeout(rushTimer);
-      intro.classList.remove("is-cover");
+      clearTimeout(idleTimer);
+      intro.classList.remove("is-cover", "is-count", "is-slow");
       stopWander();
       playSong();
       paint();
@@ -1195,19 +1239,27 @@
       if (coverStage === "still"){
         fillPhone();
         armSong();
-        coverStage = "wander";
+        coverStage = "count";
+        taps = 0;
+        btn.textContent = "0";
+        btn.style.fontSize = (buttonSize() * 0.5888) + "px";
+        intro.classList.add("is-count");
         startWander();
+        armIdle();
         return;
       }
-      if (coverStage === "wander"){
+      if (coverStage === "count"){
         armSong();
-        coverStage = "rush";
+        taps++;
+        btn.textContent = String(taps);
+        btn.style.fontSize = (buttonSize() * 0.5888) + "px";
         clearTimeout(btn._hop);
         hop(btn);
-        rushTimer = setTimeout(beginIntro, 2000);
+        if (taps >= 7){ showSlow(); return; }
+        armIdle();
         return;
       }
-      if (coverStage === "rush") return;
+      if (coverStage === "slow") return;
       if (step < 10){
         playSong();
         step++;
