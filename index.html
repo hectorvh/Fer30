@@ -104,7 +104,13 @@
     box-shadow:0 14px 18px -14px rgba(120,40,70,.45);
   }
   .back{transform:rotateY(180deg)}
-  @media (prefers-reduced-motion:reduce){.flipper{transition-duration:.01s}}
+  /* iOS Safari ignores backface-visibility for animated children (bubbles, hearts, sparks),
+     so the hidden side bleeds through mirrored. Swap visibility at the midpoint of the flip. */
+  .front{visibility:visible;transition:visibility 0s linear .375s}
+  .back{visibility:hidden;transition:visibility 0s linear .375s}
+  .card.flipped .front{visibility:hidden}
+  .card.flipped .back{visibility:visible}
+  @media (prefers-reduced-motion:reduce){.flipper{transition-duration:.01s}.front,.back{transition-delay:0s}}
   /* Round notches bitten out of both ticket ends */
   .face::before,.face::after{
     content:"";position:absolute;top:50%;width:calc(var(--notch) * 2);height:calc(var(--notch) * 2);
@@ -471,6 +477,7 @@
   @media print{
     body{background:#fff;height:100vh}
     .card.flipped .flipper{transform:none}
+    .front{visibility:visible!important}.back{visibility:hidden!important}
     .flip-hint{display:none}
     .face::before,.face::after,.perf::before,.perf::after{background:#fff}
     [contenteditable]:hover,[contenteditable]:focus{background:none}
