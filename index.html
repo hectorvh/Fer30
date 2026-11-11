@@ -960,6 +960,7 @@
   var afterBirthday = false;
   birthday.loop = false;
   welcome.loop = true;
+  welcome.volume = 0.7;
 
   function rand(min, max){ return min + Math.random() * (max - min); }
   function place(x, y, angle, scale){
@@ -1191,8 +1192,8 @@
       var pad = 8;
       var x = big ? rand(-w * 0.72, window.innerWidth - w * 0.12) : rand(pad, Math.max(pad, window.innerWidth - w - pad));
       var y = big ? rand(-h * 0.62, window.innerHeight - h * 0.12) : rand(pad, Math.max(pad, window.innerHeight - h - pad));
-      var pace = Math.max(0, Math.min(taps, 7)) / 7;
-      var dur = big ? rand(1800, 4200) : rand(380 + (80 - 380) * pace, 820 + (140 - 820) * pace);
+      var pace = Math.max(0, Math.min(taps, 10)) / 10;
+      var dur = big ? rand(1800, 4200) : rand(760 + (80 - 760) * pace, 1640 + (140 - 1640) * pace);
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) dur *= 2.6;
       el.style.transition = "left " + dur.toFixed(0) + "ms cubic-bezier(.4,.05,.6,1), top " + dur.toFixed(0) + "ms cubic-bezier(.4,.05,.6,1)";
       el.style.left = x.toFixed(1) + "px";
@@ -1310,8 +1311,8 @@
         btn.style.fontSize = (buttonSize() * 0.52992) + "px";
         clearTimeout(btn._hop);
         hop(btn);
-        if (taps === 1) playChase();
-        if (taps >= 7){ showSlow(); return; }
+        if (taps === 3) playChase();
+        if (taps >= 10){ showSlow(); return; }
         armIdle();
         return;
       }
